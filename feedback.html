@@ -47,7 +47,7 @@
           // Store the response in the 'responses' table with form_id
           const { error: insertError } = await supabase
             .from('responses')
-            .insert([{ form_id: formId, answers }]);
+            .insert([{ form_slug: formId, answers }]);
 
           if (insertError) {
             alert("Something went wrong. Try again.");
@@ -61,3 +61,4 @@
   </script>
 </body>
 </html>
+
