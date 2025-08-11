@@ -293,15 +293,16 @@
       container.className = 'star-rating';
       const stars = [];
       
-      for (let i = 1; i <= 5; i++) {
+      for (let i = 5; i >= 1; i--) {  // Reverse the creation order for RTL display
         const star = document.createElement('span');
         star.className = 'star';
         star.innerHTML = '★';
         star.dataset.value = i;
         
         star.addEventListener('click', () => {
+          // Update from left to right (reverse of display order)
           stars.forEach((s, index) => {
-            s.classList.toggle('active', index < i);
+            s.classList.toggle('active', index >= stars.length - i);
           });
           const input = container.querySelector('input');
           input.value = i;
