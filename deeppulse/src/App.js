@@ -1,6 +1,7 @@
 import './App.css';
 import React, { useState } from "react";
 
+// a react component
 function ResponseDashboard() {
   // State for filters
   const [trigger, setTrigger] = useState("Overall");
