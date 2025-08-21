@@ -31,6 +31,9 @@ async function init() {
         });
         const input = container.querySelector("input");
         input.value = i;
+
+        // 🔹 Save progress when rating selected
+        saveProgress();
       });
 
       // Add hover effect
@@ -95,11 +98,72 @@ async function init() {
     slider.addEventListener("input", () => {
       value.textContent = slider.value;
       updateSliderBackground();
+
+      // 🔹 Save progress on change
+      saveProgress();
     });
 
     container.appendChild(slider);
     container.appendChild(value);
     return container;
+  }
+
+  // 🔹 LocalStorage Helpers
+  function getDraftKey() {
+    return `form_${formId}_draft`;
+  }
+
+  function saveProgress() {
+    const form = document.getElementById("feedbackForm");
+    if (!form) return;
+
+    const formData = new FormData(form);
+    const draft = {};
+    for (const [key, value] of formData.entries()) {
+      if (draft[key]) {
+        Array.isArray(draft[key]) ? draft[key].push(value) : (draft[key] = [draft[key], value]);
+      } else {
+        draft[key] = value;
+      }
+    }
+
+    localStorage.setItem(getDraftKey(), JSON.stringify(draft));
+  }
+
+  function restoreProgress() {
+    const saved = localStorage.getItem(getDraftKey());
+    if (!saved) return;
+
+    try {
+      const draft = JSON.parse(saved);
+      const form = document.getElementById("feedbackForm");
+      if (!form) return;
+
+      Object.keys(draft).forEach((key) => {
+        const val = draft[key];
+        const input = form.querySelector(`[name="${key}"]`);
+        if (!input) return;
+
+        if (input.type === "radio") {
+          const radios = form.querySelectorAll(`[name="${key}"]`);
+          radios.forEach((r) => {
+            if (r.value === val) r.checked = true;
+          });
+        } else if (input.type === "range") {
+          input.value = val;
+          input.dispatchEvent(new Event("input")); // update UI
+        } else if (input.type === "hidden") {
+          input.value = val;
+          // re-apply star active class
+          const stars = input.parentElement.querySelectorAll(".star");
+          stars.forEach((s) => s.classList.toggle("active", parseInt(s.dataset.value) <= val));
+        } else {
+          input.value = val;
+        }
+      });
+    } catch (e) {
+      console.error("Failed to restore draft:", e);
+    }
   }
 
   async function loadForm() {
@@ -159,7 +223,7 @@ async function init() {
         const label = document.createElement("label");
         label.className = "question-label";
         label.htmlFor = `q_${idx}`;
-        label.innerText = q.label;
+        label.innerText = `${idx + 1}.  ${q.label}`;
         qDiv.appendChild(label);
 
         // Force all fields to required
@@ -178,6 +242,8 @@ async function init() {
           if (q.multiline) {
             input.rows = 4;
           }
+          // 🔹 Save on input
+          input.addEventListener("input", saveProgress);
           qDiv.appendChild(input);
         } else if (q.type === "mcq") {
           const optionsDiv = document.createElement("div");
@@ -190,6 +256,8 @@ async function init() {
             radio.name = q.name;
             radio.value = opt;
             radio.required = true; // always required
+            // 🔹 Save on change
+            radio.addEventListener("change", saveProgress);
             optLabel.appendChild(radio);
             optLabel.appendChild(document.createTextNode(opt));
             optionsDiv.appendChild(optLabel);
@@ -211,154 +279,15 @@ async function init() {
       document.getElementById("formContainer").innerHTML = "";
       document.getElementById("formContainer").appendChild(form);
 
+      // 🔹 Restore saved draft after form is in DOM
+      restoreProgress();
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        // ... your existing submit code ...
 
-        // Remove any previous error message
-        const prevError = form.querySelector(".error-message");
-        if (prevError) prevError.remove();
-
-        // Validate required fields including custom components
-        let allValid = true;
-        questions.forEach((q, idx) => {
-          let el;
-          if (q.type === "text") {
-            el = form.querySelector(`[name="${q.name}"]`);
-            if (q.required && (!el.value || el.value.trim() === "")) {
-              allValid = false;
-              el.classList.add("input-error");
-            } else {
-              el.classList.remove("input-error");
-            }
-          } else if (q.type === "mcq") {
-            const radios = form.querySelectorAll(`[name="${q.name}"]`);
-            const checked = Array.from(radios).some((r) => r.checked);
-            radios.forEach((r) => {
-              if (q.required && !checked) {
-                r.classList.add("input-error");
-              } else {
-                r.classList.remove("input-error");
-              }
-            });
-            if (q.required && !checked) allValid = false;
-          } else if (q.type === "rating") {
-            el = form.querySelector(`input[name="${q.name}"]`);
-            if (q.required && (!el.value || el.value === "")) {
-              allValid = false;
-              el.parentElement.querySelectorAll(".star").forEach((s) => s.classList.add("input-error"));
-            } else {
-              el.parentElement.querySelectorAll(".star").forEach((s) => s.classList.remove("input-error"));
-            }
-          } else if (q.type === "nps") {
-            el = form.querySelector(`[name="${q.name}"]`);
-            if (q.required && (!el.value || el.value === "")) {
-              allValid = false;
-              el.classList.add("input-error");
-            } else {
-              el.classList.remove("input-error");
-            }
-          }
-        });
-
-        if (!allValid) {
-          form.insertAdjacentHTML(
-            "beforeend",
-            `<div class="error-message">Please fill all required fields.</div>`
-          );
-          return;
-        }
-
-        document.querySelector(".loading-overlay").classList.add("visible");
-
-        try {
-          // 1) Build answers from the <form>
-          const formData = new FormData(form);
-          const answers = {};
-          for (const [key, value] of formData.entries()) {
-            // handle multi-select/checkboxes with same name
-            if (key in answers) {
-              Array.isArray(answers[key]) ? answers[key].push(value) : (answers[key] = [answers[key], value]);
-            } else {
-              answers[key] = value;
-            }
-          }
-
-          // 2) Map question.bucket -> DB column name
-          // Adjust this to your actual column names (snake_case is best).
-          const BUCKET_TO_COLUMN = {
-            'Knowledge Transfer': 'knowledge_transfer',
-            'Leadership Support': 'leadership_support',
-            'Skill Readiness': 'skill_readliness', // note: matches your column spelling
-            // Add more only if you also have columns for them:
-            'Role Clarity': 'role_clarity',
-            'Resources & Tools': 'resources_tools',
-            'Workload & Priorities': 'workload_priorities',
-          };
-
-          // 3) Build per-bucket objects like { knowledge_transfer: { qName: response, ... }, ... }
-          const bucketPayload = {};
-          questions.forEach((q) => {
-            const resp = answers[q.name];
-            if (resp === undefined) return;
-
-            const col = BUCKET_TO_COLUMN[q.bucket];
-            if (!col) return; // skip buckets without a column in your table
-
-            if (!bucketPayload[col]) bucketPayload[col] = {};
-            bucketPayload[col][q.name] = resp;
-          });
-
-          // 4) Insert everything in one go
-          const row = {
-            form_slug: formId,
-            answers,                                  // all answers
-            submitted_at: new Date().toISOString(),
-            knowledge_transfer: bucketPayload.knowledge_transfer,
-            leadership_support: bucketPayload.leadership_support,
-            skill_readliness: bucketPayload.skill_readliness,
-            role_clarity: bucketPayload.role_clarity,
-            resources_tools: bucketPayload.resources_tools,
-            workload_priorities: bucketPayload.workload_priorities                          // per-bucket { name: response } objects
-          };
-
-          const { data, error } = await supabase
-            .from('responses')
-            .insert([row])
-            .select()
-            .single();
-
-          // Fix: use 'error' instead of 'insertError'
-          if (error) {
-            form.insertAdjacentHTML(
-              "beforeend",
-              `<div class="error-message">Something went wrong. Try again.${error.message ? `<br>${error.message}` : ""}</div>`
-            );
-          } else {
-            // Update status to 'complete' after successful submission
-            console.log("Updating form status to 'complete' for formId:", formId);
-            const { data: updateData, error: updateError } = await supabase
-              .from("forms")
-              .update({ status: "complete" })
-              .eq("id", formId)
-              .select();
-
-            if (updateError) {
-              console.error("Status update error:", updateError);
-              form.insertAdjacentHTML(
-                "beforeend",
-                `<div class="error-message">Form submitted, but status update failed.</div>`
-              );
-            } else {
-              console.log("Status update result:", updateData);
-              form.reset();
-              form.innerHTML = `<div class="success-message">Thank you for your feedback!</div>`;
-            }
-          }
-        } finally {
-          document
-            .querySelector(".loading-overlay")
-            .classList.remove("visible");
-        }
+        // After successful submit
+        localStorage.removeItem(getDraftKey()); // 🔹 Clear draft
       });
     } catch (parseError) {
       document.getElementById("formContainer").innerHTML =
