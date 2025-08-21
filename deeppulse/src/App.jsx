@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 // for the icons ;)
-import { Menu, X, Search, BarChart3, ChevronDown, ChevronRight } from "lucide-react"
+import { Menu, X, Search, BarChart3, User, ChevronDown, ChevronRight, Activity } from "lucide-react"
 import { Button } from "./components/ui/Button.jsx";
 import { Card, CardContent } from "./components/ui/Card.jsx";
 import { Textarea } from "./components/ui/Textarea.jsx";
+import QueryEditor from "./components/QueryEditor.jsx";
+import Dashboard from "./components/Dashboard.jsx";
 
 // import ResponseDashboard from "./components/ResponseDashboard";
 // // import AnalysisDashboard from "./components/AnalysisDashboard";
@@ -21,6 +23,13 @@ export default function App () {
   const [dashboardOpen, setDashboardOpen] = useState(false);
   const [showWelcome, setShowWelcome] = useState(true);
   const [welcomeAnimated, setWelcomeAnimated] = useState(false);
+
+  // Navigation Items
+  const navItems = [
+    { id: "query", label: "Query", icon: <Search className="w-5 h-5" /> },
+    { id: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-5 h-5" /> },
+    { id: "profile", label: "Profile", icon: <User className="w-5 h-5" /> },
+  ];
 
   useEffect( () => {
     const timer = setTimeout(() => setWelcomeAnimated(true), 100);
@@ -42,299 +51,105 @@ export default function App () {
     }
   };
 
-
+  // Main content renderer
   const renderMainContent = () => {
-    if (activeView === "query") {
-      return (
-        <div className="space-y-6">
-          <div className="bg-muted/50 rounded-lg p-6">
-            <h2 className="text-2xl font-bold text-card-foreground mb-4">Query Interface</h2>
-            <div className="space-y-4">
-              <label htmlFor="query" className="block text-sm font-medium text-muted-foreground">
-                What's your query, enter here...
-              </label>
-              <Textarea
-                id="query"
-                placeholder="Type your HR query here"
-                className="min-h-[200px] bg-input border-border focus:ring-ring" />
-                <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                Execute Queryy</Button>
-            </div>
+    switch (activeView) {
+      case "query":
+        return <QueryEditor />;
+      case "dashboard":
+        return <Dashboard />;
+      case "profile":
+        return (
+          <div className="p-8">
+            <h2 className="text-2xl font-bold mb-4">Profile</h2>
+            <p className="text-muted-foreground">User profile details go here.</p>
           </div>
-        </div>
-      );
-    }
-
-    if (activeView === "dashboard") {
-      return (
-        <div className="space-y-6">
-          <div className="bg-muted/50 rounded-lg p-8">
-            <h2 className="text-2xl font-bold text-card-foreground mb-4">Response Dashboard</h2>
-            <div className="border-2 border-dashed border-border rounded-lg p-12 text-center">
-              <BarChart3 className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
-              <p className="text-lg text-muted-foreground">Response Dashboard goes here</p>
-              <p className="text-sm text-muted-foreground mt-2">
-                This area will display analytics, charts, and response data
+        );
+      default:
+        // return (
+        //   <div className="p-8">
+        //     <h2 className="text-3xl font-bold mb-4">Welcome to DeepPulse 🚀</h2>
+        //     <p className="text-muted-foreground">Select an option from the sidebar to get started.</p>
+        //   </div>
+        // );
+        
+        return (
+          <div className="flex items-center justify-center h-full p-8">
+            <div className="text-center max-w-lg">
+              <h2 className="text-3xl font-bold mb-4">DeepPulse 🌊</h2>
+              <p className="text-muted-foreground text-lg">
+                “What gets measured, gets improved.”  
+                <br></br>Start exploring insights from the sidebar.
               </p>
             </div>
           </div>
-        </div>
-      );
+        );
+
     }
-
-    // Default Home View
-    return (
-      <div className="space-y-8">
-        {/* Welcome Message */}
-        <div className={`transition-all duration-1000 ease-out ${
-            showWelcome
-              ? "transform translate-y-0 opacity-100 scale-100"
-              : "transform -translate-y-4 opacity-80 scale-95"
-          }`}
-        >
-          <div className={`bg-gradient-to-r from-muted to-muted/50 rounded-lg p-8 text-center ${
-              welcomeAnimated ? "animate-fade-in-up" : "opacity-0"
-            }`}
-          >
-            <h1 className={`font-bold text-primary transition-all duration-1000 ${
-                showWelcome ? "text-4xl md:text-5xl" : "text-2xl"
-              }`}>
-              Happy Monday, Aisha! 🌟
-            </h1>
-            {showWelcome && (
-              <p className="text-muted-foreground mt-4 text-lg animate-fade-in delay-500">
-                Ready to make today productive?
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Quick Access Tiles */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 border-border bg-card"
-            onClick={() => handleQuickAccess("query")}>
-            <CardContent className="p-8 text-center">
-              <div className="bg-primary/10 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <Search className="h-8 w-8 text-primary" />
-              </div>
-              <h3 className="text-2xl font-bold text-card-foreground mb-2">Query</h3>
-              <p className="text-muted-foreground">
-                Search and analyze employee data with powerful queries
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:scale-105 border-border bg-card"
-            onClick = {() => handleQuickAccess("dashboard")}>
-            <CardContent className="p-8 text-center">
-              <div className="bg-secondary/10 rounded-full p-4 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
-                <BarChart3 className="h-8 w-8 text-secondary" />
-              </div>
-              <h3 className="text-2xl font-bold text-card-foreground mb-2">Dashboard</h3>
-              <p className="text-muted-foreground">
-                View comprehensive analytics and response insights
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
   };
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`bg-sidebar border-r border-sidebar-border transition-all duration-300 ease-in-out ${
-          sidebarOpen ? "w-64" : "w-16"
-        }`}>
-        <div className="p-4">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="w-full justify-start hover:bg-sidebar-accent">
-            {sidebarOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-            {sidebarOpen && <span className="ml-2">Close</span>}
-          </Button>
+      <aside
+        className={`flex flex-col bg-sidebar border-r border-sidebar-border transition-all duration-300 ${
+          sidebarOpen ? "w-58" : "w-20"
+        }`}> 
+
+        {/* Logo + Toggle */}
+        <div className="flex items-center justify-between p-5 border-b border-sidebar-border">
+          <div 
+            className="flex items-center gap-2 cursor-pointer"
+            onClick={() => !sidebarOpen && setSidebarOpen(true)} // expand only when collapsed
+          >
+            <Activity className="w-8 h-8 text-primary" />
+            <span 
+              className={`text-lg font-bold text-primary transition-opacity duration-300 ${
+                sidebarOpen ? "opacity-100" : "opacity-0"
+              }`}>DeepPulse
+            </span>
+            
+          </div>
+
+          {sidebarOpen && (
+            <button
+              onClick={() => setSidebarOpen(false)}  //collapse
+              className="p-2 rounded-lg hover:bg-sidebar-accent transition">
+              <svg 
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 text-black"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+          )}
         </div>
 
-        <nav className="px-4 space-y-2">
-
-          {/* Query Menu */}
-          <Button
-            variant={activeView === "query" ? "default" : "ghost"}
-            className={`w-full justify-start transition-colors ${
-              activeView === "query"
-                ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                : "hover:bg-sidebar-accent text-sidebar-foreground"
-            }`}
-            onClick={() => {
-              setActiveView("query");
-              setDashboardOpen(false);
-            }}
-          >
-            <Search className="h-5 w-5" />
-            {sidebarOpen && <span className="ml-2">Query</span>}
-          </Button>
-
-          {/* Dashboard Menu */}
-          <div>
-            <Button
-              variant={activeView === "dashboard" ? "default" : "ghost"}
-              className={`w-full justify-start transition-colors ${
-                activeView === "dashboard"
-                  ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                  : "hover:bg-sidebar-accent text-sidebar-foreground"
-              }`}
-              onClick={() => {
-                setActiveView("dashboard");
-                setDashboardOpen(!dashboardOpen);
-              }}
-            >
-              <BarChart3 className="h-5 w-5" />
-              {sidebarOpen && (
-                <>
-                  <span className="ml-2 flex-1 text-left">Dashboard</span>
-                  {dashboardOpen ? (
-                    <ChevronDown className="h-4 w-4" />
-                  ) : (
-                    <ChevronRight className="h-4 w-4" />
-                  )}
-                </>
-              )}
-            </Button>
-
-            {/* Dashboard Submenu */}
-            {sidebarOpen && dashboardOpen && (
-              <div className="ml-4 mt-2 space-y-1">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="w-full justify-start text-sm bg-sidebar-accent/50 text-sidebar-accent-foreground"
-                >
-                  Response Dashboard
-                </Button>
-              </div>
-            )}
-          </div>
+        {/* Navigation */}
+        <nav className="flex-1 flex flex-col mt-4 space-y-2 px-2">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => setActiveView(item.id)}
+              className={`flex items-center w-full p-2 rounded-lg transition-all duration-200 hover:bg-sidebar-accent ${
+                activeView === item.id ? "bg-primary text-white" : "text-sidebar-foreground"
+              }`}>
+              <div className="flex-shrink-0">{item.icon}</div>
+              <span
+                className={`ml-3 whitespace-nowrap transition-opacity duration-300 ${
+                  sidebarOpen ? "opacity-100" : "opacity-0"
+                }`}>
+                {item.label}
+              </span>
+            </button>
+          ))}
         </nav>
-      </div>
+      </aside>
 
-      {/* --- Side bar ended here --- tada! */}
-      
-      {/* Main Content */}
-      <div className="flex-1 overflow-auto">
-        <div className="p-8">{renderMainContent()}</div>
-      </div>
+      {/* Main content */}
+      <main className="flex-1 overflow-auto">{renderMainContent()}</main>
     </div>
   );
 }
-
-// function App() {
-//   const [query, setQuery] = useState("");
-//   const [activeDashboard, setActiveDashboard] = useState(null);
-//   const [submittedQuery, setSubmittedQuery] = useState("");
-//   const [response, setResponse] = useState(null);
-
-//   const handleResponseDashboard = () => {
-//     setActiveDashboard("response");
-//   };
-
-//   const handleAnalysisDashboard = () => {
-//     setActiveDashboard("submitted"); 
-//   };
-
-//   const handleReloadData = async () => {
-//     try {
-//       // Fetch data from Supabase table
-//       const { data, error } = await supabase
-//         .from("responses")
-//         .select("*");
-
-//       if (error) {
-//         console.error("Error fetching data:", error);
-//         alert("Failed to fetch data from Supabase");
-//         return;
-//       }
-
-//       // Convert data to JSON string
-//       const jsonString = JSON.stringify(data, null, 2);
-
-//       // Create a blob and trigger download
-//       const blob = new Blob([jsonString], { type: "application/json" });
-//       const link = document.createElement("a");
-//       link.href = URL.createObjectURL(blob);
-//       link.download = "responses.json";
-//       document.body.appendChild(link);
-//       link.click();
-//       document.body.removeChild(link);
-
-//       alert(`Downloaded responses.json with ${data.length} rows!`);
-//     } catch (err) {
-//       console.error("Error reloading data:", err);
-//       alert("Something went wrong while downloading data");
-//     }
-//   };
-
-
-//   const handleSubmit = async () => {
-//     setSubmittedQuery(query);
-//     setActiveDashboard("submitted"); // switch to submitted screen
-
-//     try {
-//       const res = await fetch("http://localhost:8000/query", {
-//         method: "POST",
-//         headers: { "Content-Type": "application/json" },
-//         body: JSON.stringify({ query }),
-//       });
-
-//       const data = await res.json();
-//       setResponse(data);
-//     } catch (error) {
-//       console.error("Error calling MCP:", error);
-//       setResponse({ error: "Failed to connect to MCP" });
-//     }
-//   };
-
-//   return (
-//     <div className="app-container">
-//       {/* Sidebar */}
-//       <div className="sidebar">
-//         <h2 style={{ color: "white" }}>Query System</h2>
-//         <div className="button-container">
-//           <button onClick={handleResponseDashboard}>Response Dashboard</button>
-//           {<button onClick={handleAnalysisDashboard}>Query Dashboard</button>}
-//         </div>
-
-//         <textarea
-//           value={query}
-//           onChange={(e) => setQuery(e.target.value)}
-//           placeholder="Enter your query here..."
-//           rows="10"
-//           className="query-editor"
-//         />
-//         <div style={{ display: "flex", gap: "10px", marginTop: "10px" }}>
-//     <button onClick={handleSubmit} className="submit-button">
-//       Submit Query
-//     </button>
-
-//     <button onClick={handleReloadData} className="reload-button">
-//       Reload Data
-//     </button>
-//   </div>
-//       </div>
-
-//       {/* Main content */}
-//       <div className="main-content">
-//         {activeDashboard === "response" && <ResponseDashboard />}
-//         {/* {activeDashboard === "analysis" && <AnalysisDashboard />} */}
-
-//         {activeDashboard === "submitted" && (
-//           <SubmittedQuery data={response} />
-//         )}
-//       </div>
-//     </div>
-//   );
-// }
-
-// export default App;
