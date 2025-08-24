@@ -1,31 +1,77 @@
 // src/components/Dashboard.jsx
 import { useState, useEffect } from "react";
 import { format, subDays, subMonths, subQuarters } from "date-fns";
-import { Users, TrendingUp, Smile, Star } from "lucide-react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import {ChevronDown } from "lucide-react";
+
+//KPIs
+import KPIs from "./charts/KPIs";
+import SentimentGauge from "./charts/SentimentGuage";
+// data
+import orgData from "../data/outputs_v02.json";
+import TriggerActivityChart from "./charts/triggerActivityChart";
+import SentimentTrendChart from "./charts/SentimentTrendChart";
+import SummaryCharts from "./charts/SummaryCharts";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
   const [range, setRange] = useState({
-    from: new Date(),
+    from: subDays(new Date(), 7),  // default last 7 days
     to: new Date(),
   });
 
-  // Sample org-level data 
-  const orgData = {
-    overall_mood: { happy: 58, okay: 27, unhappy: 15 },
-    participation: { total_responses: 240, response_rate_percent: 68 },
-    by_team: [
-      { team: "Engineering", responses: 90 },
-      { team: "Sales", responses: 65 },
-      { team: "HR", responses: 20 },
-      { team: "Support", responses: 40 },
-      { team: "Marketing", responses: 25 },
-    ],
-    what_people_liked: ["Good teamwork", "Helpful managers", "Learning opportunities"],
-    what_people_struggled_with: ["Heavy workload", "Unclear roles", "Access to tools"],
-    avg_rating: 42,
-  };
+  // const [timeRange, setTimeRange] = useState("last7");
+  const [selectedDept, setSelectedDept] = useState("All");
+
+  const depts = ["All", ...new Set(orgData.weeks.flatMap(w => w.departments.map(d => d.department)))];
+
+
+  // Filter weeks by selected date range
+  const filteredWeeks = orgData.weeks.filter((w) => {
+    const weekDate = new Date(w.week);
+    return weekDate >= range.from && weekDate <= range.to;
+  });
+
+  // Aggregate data over filtered weeks
+  const aggregatedData = filteredWeeks.reduce((acc, week) => {
+    week.departments.forEach((dept) => {
+      const existing = acc.departments.find(d => d.department === dept.department);
+      if (existing) {
+        existing.responses += dept.responses;
+        existing.positive += dept.positive;
+        existing.neutral += dept.neutral;
+        existing.negative += dept.negative;
+      } else {
+        acc.departments.push({ ...dept });
+      }
+    });
+
+    // Aggregate teh trigger activity
+    week.trigger_activity.forEach((trigger) => {
+      const existing = acc.trigger_activity.find(t => t.trigger_type === trigger.trigger_type);
+      if (existing) {
+        existing.responses += trigger.responses;
+        existing.positive += trigger.positive;
+        existing.neutral += trigger.neutral;
+        existing.negative += trigger.negative;
+      } else {
+        acc.trigger_activity.push({ ...trigger });
+      }
+    });
+
+    return acc;
+  }, {departments:[], trigger_activity: []}
+);
+
+
+
+  const dataToUse = 
+    selectedDept === "All"
+    ? aggregatedData
+    : { 
+      departments: aggregatedData.departments.filter(d => d.department === selectedDept),
+      trigger_activity: aggregatedData.trigger_activity,
+    };
+  
 
   const presets = [
     { label: "Last 7 days", range: { from: subDays(new Date(), 7), to: new Date() } },
@@ -37,186 +83,127 @@ export default function Dashboard() {
     setRange(r);
     setOpen(false);
   };
-
-  function StatCard({ icon: Icon, label, value, color }) {
-    const [count, setCount] = useState(0);
-  
-    // Animate number count-up
-    useEffect(() => {
-      let start = 0;
-      const end = value;
-      if (start === end) return;
-  
-      let increment = end / 50; // speed
-      let timer = setInterval(() => {
-        start += increment;
-        if (start >= end) {
-          start = end;
-          clearInterval(timer);
-        }
-        setCount(Math.round(start));
-      }, 30);
-  
-      return () => clearInterval(timer);
-    }, [value]);
-    return (
-        <div
-          className={`flex flex-col items-center justify-center p-4 rounded-2xl shadow-md bg-gradient-to-br ${color} text-white transition transform hover:scale-105`}
-        >
-          <Icon className="w-8 h-8 mb-3" />
-          <h3 className="text-sm opacity-80">{label}</h3>
-          <p className="text-3xl font-bold">{count}</p>
-        </div>
-      );
-    }
-
-    // Chart data
-  const moodData = [
-    { name: "Happy", value: orgData.overall_mood.happy },
-    { name: "Okay", value: orgData.overall_mood.okay },
-    { name: "Unhappy", value: orgData.overall_mood.unhappy },
-  ];
-  const COLORS = [
-    getComputedStyle(document.documentElement).getPropertyValue("--chart-1").trim(),
-    getComputedStyle(document.documentElement).getPropertyValue("--chart-2").trim(),
-    getComputedStyle(document.documentElement).getPropertyValue("--chart-3").trim(),
-    getComputedStyle(document.documentElement).getPropertyValue("--chart-4").trim(),
-  ];
   
 
   return (
     <div className="p-8">
         <h2 className="text-2xl font-bold mb-6">Dashboard</h2>
 
-        {/* Date Filter Button */}
-        <button
+        {/* Filters */}
+        <div className="flex gap-4 mb-8">
+          {/* Time filter */}
+          <button
             onClick={() => setOpen(true)}
             className="px-4 py-2 border rounded-lg bg-white hover:bg-gray-50 shadow-sm"
-        >
-            {format(range.from, "MMM d, yyyy")} - {format(range.to, "MMM d, yyyy")}
-        </button>
+          >
+            <span className="font-medium">
+              {format(range.from, "MMM d")} - {format(range.to, "MMM d, yyyy")}
+            </span>
 
-        {/* Modal (simple) */}
+          </button>
+
+          {/* Department Filter */}
+          <select 
+            value={selectedDept}
+            onChange={(e) => setSelectedDept(e.target.value)}
+            className="px-3 py-2 border rounded-lg bg-white shadow-sm"
+          >
+            {depts.map((d) => (
+              <option key={d} value={d}>
+                {d}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
+
+        </div>
+
+        {/* Modal for the date filter */}
         {open && (
-            <div className="fixed inset-0 flex items-center justify-center bg-gray-200/40 backdrop-blur-sm z-50">
-            <div className="bg-white/100 backdrop-blur-md border border-gray-200 rounded-xl shadow-lg w-full max-w-md p-6">
-                <h3 className="text-lg font-semibold mb-4">Select Date Range</h3>
+          <div className="fixed inset-0 flex items-center justify-center bg-gray-200/40 backdrop-blur-sm z-50">
+            <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6">
+              <h3 className="text-lg font-semibold mb-4">Select Date Range</h3>
 
-                {/* Presets */}
-                <div className="flex flex-wrap gap-2 mb-4">
+              {/* Presets */}
+              <div className="flex flex-wrap gap-2 mb-4">
                 {presets.map((p, i) => (
-                    <button
+                  <button
                     key={i}
                     onClick={() => applyRange(p.range)}
-                    className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition">
+                    className="px-3 py-2 border rounded-lg hover:bg-gray-100 transition"
+                  >
                     {p.label}
-                    </button>
+                  </button>
                 ))}
-                </div>
+              </div>
 
-                {/* Custom range */}
-                <div className="flex flex-col gap-3">
+              {/* Custom Date Pickers */}
+              <div className="flex flex-col gap-3">
                 <label className="flex flex-col">
-                    <span className="text-sm text-gray-600">Start Date</span>
-                    <input
+                  <span className="text-sm text-gray-600">Start Date</span>
+                  <input
                     type="date"
                     className="border rounded-lg px-3 py-2"
                     value={format(range.from, "yyyy-MM-dd")}
                     onChange={(e) =>
-                        setRange((prev) => ({ ...prev, from: new Date(e.target.value) }))
+                      setRange((prev) => ({ ...prev, from: new Date(e.target.value) }))
                     }
-                    />
+                  />
                 </label>
 
                 <label className="flex flex-col">
-                    <span className="text-sm text-gray-600">End Date</span>
-                    <input
+                  <span className="text-sm text-gray-600">End Date</span>
+                  <input
                     type="date"
                     className="border rounded-lg px-3 py-2"
                     value={format(range.to, "yyyy-MM-dd")}
                     onChange={(e) =>
-                        setRange((prev) => ({ ...prev, to: new Date(e.target.value) }))
+                      setRange((prev) => ({ ...prev, to: new Date(e.target.value) }))
                     }
-                    />
+                  />
                 </label>
-                </div>
+              </div>
 
-                {/* Actions */}
-                <div className="flex justify-end gap-2 mt-6">
+              {/* Actions */}
+              <div className="flex justify-end gap-2 mt-6">
                 <button
-                    onClick={() => setOpen(false)}
-                    className="px-3 py-2 border rounded-lg hover:bg-gray-100"
+                  onClick={() => setOpen(false)}
+                  className="px-3 py-2 border rounded-lg hover:bg-gray-100"
                 >
-                    Cancel
+                  Cancel
                 </button>
                 <button
-                    onClick={() => setOpen(false)}
-                    className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  onClick={() => setOpen(false)}
+                  className="px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
-                    Apply
+                  Apply
                 </button>
-                </div>
+              </div>
             </div>
-            </div>
+          </div>
         )}
 
+        {/* KPI Cards Row */}
+        <KPIs dataToUse={dataToUse} orgData={orgData} />
+        <SentimentGauge dataToUse = {dataToUse} />
 
-      {/* KPI cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-8">
-        <StatCard
-            icon={Users}
-            label="Total Responses"
-            value={orgData.participation.total_responses}
-            color="from-[var(--chart-1)] to-[var(--chart-2)]"
-        />
-        <StatCard
-            icon={TrendingUp}
-            label="Participation Rate"
-            value={orgData.participation.response_rate_percent}
-            color="from-green-500 to-green-700"
-        />
-        <StatCard
-            icon={Smile}
-            label="% Happy Employees"
-            value={orgData.overall_mood.happy}
-            color="from-yellow-400 to-yellow-600"
-        />
-        <StatCard
-            icon={Star}
-            label="Recommendation Score"
-            value={orgData.recommendation_score}
-            color="from-purple-500 to-purple-700"
-        />
+      {/* Charts placeholder */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="p-4 rounded-lg shadow bg-white border">
+          <TriggerActivityChart triggerData={dataToUse.trigger_activity} />
         </div>
-
-        {/* Charts Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Mood Breakdown Pie Chart */}
-            <div className="p-4 bg-white rounded-xl border shadow-sm">
-            <h3 className="text-lg font-semibold mb-4">Mood Breakdown</h3>
-            <ResponsiveContainer width="100%" height={250}>
-                <PieChart>
-                <Pie
-                    data={moodData}
-                    dataKey="value"
-                    nameKey="name"
-                    cx="50%"
-                    cy="50%"
-                    outerRadius={80}
-                    label
-                >
-                    {moodData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                </Pie>
-                <Tooltip />
-                <Legend />
-                </PieChart>
-            </ResponsiveContainer>
-            </div>
+        <div className="p-4 rounded-lg shadow bg-white border">
+          <SentimentTrendChart weeks={filteredWeeks} selectedDept={selectedDept} />
         </div>
-
-
+        <div className="p-4 rounded-lg shadow bg-white border">
+          <SummaryCharts summaries={filteredWeeks.map(w => w.summary)} />
+        </div>
+        {/* <div className="p-4 rounded-lg shadow bg-white border">MoodBreakdown</div>
+        <div className="p-4 rounded-lg shadow bg-white border">TrendOverTime</div>
+        <div className="p-4 rounded-lg shadow bg-white border">DepartmentBreakdown</div>
+        <div className="p-4 rounded-lg shadow bg-white border">TriggerActivity</div> */}
+      </div>
     </div>
   );
 }
+        
