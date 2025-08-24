@@ -385,20 +385,21 @@ async function init() {
 
                     const { data: formDataRow, error: formFetchError } = await supabase
                         .from("forms")
-                        .select("trigger_type")
+                        .select("trigger_type, department")
                         .eq("id", formId)
                         .single();
 
                     if (formFetchError) {
-                        console.error("Error fetching trigger_type:", formFetchError);
+                        console.error("Error fetching trigger_type and department:", formFetchError);
                         form.insertAdjacentHTML(
                             "beforeend",
-                            `<div class="error-message">Could not fetch trigger type. ${formFetchError.message}</div>`
+                            `<div class="error-message">Could not fetch form metadata. ${formFetchError.message}</div>`
                         );
                         return;
                     }
 
                     const triggerType = formDataRow?.trigger_type || null;
+                    const department = formDataRow?.department || null;
 
                     // 4) Insert everything in one go
                     const row = {
@@ -411,7 +412,8 @@ async function init() {
                         role_clarity: bucketPayload.role_clarity,
                         resources_tools: bucketPayload.resources_tools,
                         workload_priorities: bucketPayload.workload_priorities,
-                        trigger_type: triggerType
+                        trigger_type: triggerType,
+                        department: department,
 
 
                     };
