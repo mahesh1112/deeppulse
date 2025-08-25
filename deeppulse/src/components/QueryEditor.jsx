@@ -11,15 +11,15 @@ export default function QueryEditor() {
   const sampleQueries = [
     {
       label: "Sentiment Analysis",
-      query: "What is the overall employee sentiment this week?",
+      query: "Give me overall sentiment analysis.",
     },
     {
       label: "Response Rate",
-      query: "How many employees shared feedback this week?"
+      query: "What is the response rate ?"
     },
     {
       label: "Top Issues",
-      query: "What are the top 3 issues employees are talking about?",
+      query: "What are the top issues mentioned in the feedback?",
     },
   ];
 

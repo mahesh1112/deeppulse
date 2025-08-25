@@ -14,6 +14,10 @@ import SummaryCharts from "./charts/SummaryCharts";
 
 export default function Dashboard() {
   const [open, setOpen] = useState(false);
+
+  // trigger based filtering (only show data from selected trigger)
+  const [selectedTrigger, setSelectedTrigger] = useState("All");
+
   const [range, setRange] = useState({
     from: subDays(new Date(), 7),  // default last 7 days
     to: new Date(),
@@ -115,7 +119,19 @@ export default function Dashboard() {
             ))}
           </select>
           <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 pointer-events-none" />
-
+          
+          {/* Trigger Filter - future feature */}
+          {/* <select 
+            value={selectedTrigger}
+            onChange={(e) => setSelectedTrigger(e.target.value)}
+            className="px-3 py-2 border rounded-lg bg-white shadow-sm"
+          >
+            <option value="All">All Triggers</option>
+            {Object.keys(orgData.triggers).map((t) => (
+              <option key={t} value={t}> {t.replaceAll("_", " ")} </option>
+            ))}
+          </select>
+          <ChevronDown className="absolute right-3 top-1/2 -translate-y" /> */}
         </div>
 
         {/* Modal for the date filter */}

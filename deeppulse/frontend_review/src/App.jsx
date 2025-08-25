@@ -7,6 +7,16 @@ import { Textarea } from "./components/ui/Textarea.jsx";
 import QueryEditor from "./components/QueryEditor.jsx";
 import Dashboard from "./components/Dashboard.jsx";
 
+// import ResponseDashboard from "./components/ResponseDashboard";
+// // import AnalysisDashboard from "./components/AnalysisDashboard";
+// import SubmittedQuery from "./components/SubmitQuery"; 
+// import "./App.css";
+// import { createClient } from "@supabase/supabase-js";
+
+// const SUPABASE_URL = "https://dvadfkbnzwgaktrwbzcy.supabase.co";
+// const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImR2YWRma2JuendnYWt0cndiemN5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ0NjMxMTgsImV4cCI6MjA3MDAzOTExOH0.nVuyxZ4c3CNKRTpE0MaEIf35OGWnldKkxC2MCfymwB4";
+// const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
 export default function App () {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeView, setActiveView] = useState("home");
@@ -56,7 +66,12 @@ export default function App () {
           </div>
         );
       default:
-        // homepage view
+        // return (
+        //   <div className="p-8">
+        //     <h2 className="text-3xl font-bold mb-4">Welcome to DeepPulse 🚀</h2>
+        //     <p className="text-muted-foreground">Select an option from the sidebar to get started.</p>
+        //   </div>
+        // );
         
         return (
           <div className="flex items-center justify-center h-full p-8">
