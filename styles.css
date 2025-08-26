@@ -12,7 +12,29 @@ body {
       box-shadow: 0 4px 24px rgba(0,0,0,0.08);
       padding: 32px 24px;
     }
-    h2 {
+
+    .form-intro {
+      text-align: center;
+      margin-bottom: 28px;
+      padding: 8px 0;
+    }
+
+    .form-intro h2 {
+      color: #111827;          /* dark neutral, softer than black */
+      font-size: 1.6rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      letter-spacing: -0.3px;
+    }
+
+    .form-subtext {
+      color: #4b5563;          /* muted gray */
+      font-size: 0.9rem;
+      line-height: 1.4;
+      max-width: 480px;
+      margin: 8px auto 50px;
+    }
+    /* h2 {
       text-align: center;
       color: #2d3748;
       margin-bottom: 24px;
@@ -21,8 +43,7 @@ body {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 32px 40px;  /* Increased gap between elements */
-      padding: 0 16px;
-    }
+      /* padding: 0 16px;} */ 
 
     .question {
       margin-bottom: 16px;
@@ -111,17 +132,23 @@ body {
       color: #fff;
       border: none;
       border-radius: 8px;
-      padding: 12px 0;
-      font-size: 1.1rem;
+      padding: 12px 32px;
+      font-size: 1.05rem;
       font-weight: 600;
       cursor: pointer;
-      transition: background 0.2s;
-      margin-top: 12px;
-      grid-column: 1 / -1;  /* Make button full-width */
-      width: 100%;
+      transition: transform 0.2s ease, background 0.3s ease;
+      display: block;
+      /* margin-top: 12px; */
+      margin: 24px auto 0;
+      /* grid-column: 1 / -1;  Make button full-width */
+      width: 30%;
+      text-align: center;
+      
+      
     }
     button[type="submit"]:hover {
       background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
+      transform: translateY(-2px);
     }
     .success-message {
       color: #22c55e;
@@ -172,7 +199,7 @@ body {
     .nps-slider {
       width: 100%;
       height: 8px;
-      -webkit-appearance: none;
+      /* -webkit-appearance: none; */
       background: linear-gradient(to right, #6366f1 50%, white 50%);
       border: 1px solid #cbd5e1;
       border-radius: 8px;
