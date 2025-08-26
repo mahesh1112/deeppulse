@@ -204,6 +204,15 @@ async function init() {
             if (!Array.isArray(questions)) {
                 throw new Error("Questions data is not an array");
             }
+            questions.sort((a, b) => {
+                if (a.type === "text" && a.multiline && !(b.type === "text" && b.multiline)) {
+                    return 1; // push a after b
+                }
+                if (b.type === "text" && b.multiline && !(a.type === "text" && a.multiline)) {
+                    return -1; // push b after a
+                }
+                return 0; // keep relative order
+            });
 
             const form = document.createElement("form");
             form.id = "feedbackForm";
@@ -474,6 +483,7 @@ init().catch((err) => {
     document.getElementById("formContainer").innerHTML = `
     <div class="error-message">An unexpected error occurred.</div>`;
 });
+
 
 
 
