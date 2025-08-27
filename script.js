@@ -373,12 +373,18 @@ async function init() {
 
                     // 2) Map question.bucket -> DB column name
                     const BUCKET_TO_COLUMN = {
-                        'Knowledge Transfer': 'knowledge_transfer',
+
+                        'Skill utilization': 'skill_utilization',
                         'Leadership Support': 'leadership_support',
-                        'Skill Readiness': 'skill_readliness',
-                        'Role Clarity': 'role_clarity',
-                        'Resources & Tools': 'resources_tools',
-                        'Workload & Priorities': 'workload_priorities',
+                        'Learning needs': 'learning_needs',
+                        'Satisfaction': 'satisfaction',
+                        'Engagement rate': 'engagement_rate',
+                        'Workload balance': 'worklife_balance',
+                        'Fairness ': 'fairness',
+                        'Skill Alignment': 'skill_allignment',
+                        'Team colaboration': 'team_collaboration',
+
+                        
                     };
 
                     // 3) Build per-bucket objects
@@ -415,15 +421,20 @@ async function init() {
                         form_slug: formId,
                         answers,
                         submitted_at: new Date().toISOString(),
-                        knowledge_transfer: bucketPayload.knowledge_transfer,
+                        skill_utilization: bucketPayload.skill_utilization,
                         leadership_support: bucketPayload.leadership_support,
-                        skill_readliness: bucketPayload.skill_readliness,
-                        role_clarity: bucketPayload.role_clarity,
-                        resources_tools: bucketPayload.resources_tools,
-                        workload_priorities: bucketPayload.workload_priorities,
+                        learning_needs: bucketPayload.learning_needs,
+                        satisfaction: bucketPayload.satisfaction,
+                        engagement_rate: bucketPayload.engagement_rate,
+                        worklife_balance: bucketPayload.worklife_balance,
+                        fairness: bucketPayload.fairness,
+                        skill_allignment: bucketPayload.skill_allignment,
+                        team_collaboration: bucketPayload.team_collaboration,
                         trigger_type: triggerType,
                         department: department,
 
+
+                      
 
                     };
 
@@ -483,7 +494,6 @@ init().catch((err) => {
     document.getElementById("formContainer").innerHTML = `
     <div class="error-message">An unexpected error occurred.</div>`;
 });
-
 
 
 
