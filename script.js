@@ -373,18 +373,15 @@ async function init() {
 
                     // 2) Map question.bucket -> DB column name
                     const BUCKET_TO_COLUMN = {
-
-                        'Skill utilization': 'skill_utilization',
-                        'Leadership Support': 'leadership_support',
-                        'Learning needs': 'learning_needs',
-                        'Satisfaction': 'satisfaction',
-                        'Engagement rate': 'engagement_rate',
-                        'Workload balance': 'worklife_balance',
-                        'Fairness ': 'fairness',
-                        'Skill Alignment': 'skill_allignment',
-                        'Team colaboration': 'team_collaboration',
-
-                        
+                        'skills utilization': 'skills_utilization',
+                        'leadership support': 'leadership_support',
+                        'learning needs': 'learning_needs',
+                        'satisfaction': 'satisfaction',
+                        'engagement rate': 'engagement_rate',
+                        'worklife balance': 'worklife_balance',
+                        'fairness': 'fairness',
+                        'skills alignment': 'skills_alignment',
+                        'team colaboration': 'team_collaboration',
                     };
 
                     // 3) Build per-bucket objects
@@ -392,15 +389,20 @@ async function init() {
                     questions.forEach((q) => {
                         const resp = answers[q.name];
                         if (resp === undefined) return;
-                        const col = BUCKET_TO_COLUMN[q.bucket];
-                        if (!col) return;
+                        const normalizedBucket = q.bucket?.toLowerCase().trim();
+                        const col = BUCKET_TO_COLUMN[normalizedBucket];
+
+                        if (!col) {
+                            console.warn(`Unmapped bucket: ${q.bucket}`);
+                            return;
+                        }
                         if (!bucketPayload[col]) bucketPayload[col] = {};
                         bucketPayload[col][q.name] = resp;
                     });
 
                     const { data: formDataRow, error: formFetchError } = await supabase
                         .from("forms")
-                        .select("trigger_type, department")
+                        .select("trigger_type, department, metadata")
                         .eq("id", formId)
                         .single();
 
@@ -415,6 +417,7 @@ async function init() {
 
                     const triggerType = formDataRow?.trigger_type || null;
                     const department = formDataRow?.department || null;
+                    const projectName = formDataRow?.metadata?.project_name || null;
 
                     // 4) Insert everything in one go
                     const row = {
@@ -428,13 +431,48 @@ async function init() {
                         engagement_rate: bucketPayload.engagement_rate,
                         worklife_balance: bucketPayload.worklife_balance,
                         fairness: bucketPayload.fairness,
-                        skill_allignment: bucketPayload.skill_allignment,
+                        skill_allignment: bucketPayload.skills_alignment,
                         team_collaboration: bucketPayload.team_collaboration,
                         trigger_type: triggerType,
                         department: department,
+                    };
+
+                    const manager_change_row = {
+                        submitted_at: new Date().toISOString(),
+                        leadership_support: bucketPayload.leadership_support,
+                        engagement_rate: bucketPayload.engagement_rate,
+                        worklife_balance: bucketPayload.worklife_balance,
+                        fairness: bucketPayload.fairness,
+                        department: department,
+
+                    };
+
+                    const promotion_row = {
+                        submitted_at: new Date().toISOString(),
+                        skills_utilization: bucketPayload.skills_utilization,
+                        learning_needs: bucketPayload.learning_needs,
+                        satisfaction: bucketPayload.satisfaction,
+                        worklife_balance: bucketPayload.worklife_balance,
+
+                    };
+
+                    const project_change_row = {
+                        submitted_at: new Date().toISOString(),
+                        engagement_rate: bucketPayload.engagement_rate,
+                        worklife_balance: bucketPayload.worklife_balance,
+                        skills_alignment: bucketPayload.skills_alignment,
+                        team_collaboration: bucketPayload.team_collaboration,
+                        project_name: projectName,
 
 
-                      
+                    };
+
+                    const static_forms_row = {
+                        submitted_at: new Date().toISOString(),
+                        answers: answers,
+                        group_name: triggerType,
+
+
 
                     };
 
@@ -443,6 +481,69 @@ async function init() {
                         .insert([row])
                         .select()
                         .single();
+
+                    if (triggerType == "Manager_Change") {
+                        const { data: tData, error: tError } = await supabase
+                            .from('manager_change_responses')
+                            .insert([manager_change_row])
+                            .select()
+                            .single();
+
+                        if (tError) {
+                            form.insertAdjacentHTML(
+                                "beforeend",
+                                `<div class="error-message">Something went wrong. Try again.${tError.message ? `<br>${tError.message}` : ""}</div>`
+                            );
+                            console.log(tError.message);
+                        }
+                    }
+                    else if (triggerType == "Promotion") {
+                        const { data: tData, error: tError } = await supabase
+                            .from('promotion_responses')
+                            .insert([promotion_row])
+                            .select()
+                            .single();
+
+                        if (tError) {
+                            form.insertAdjacentHTML(
+                                "beforeend",
+                                `<div class="error-message">Something went wrong. Try again.${tError.message ? `<br>${tError.message}` : ""}</div>`
+                            );
+                            console.log(tError.message);
+                        }
+                    }
+                    else if (triggerType == "Project_Change") {
+                        const { data: tData, error: tError } = await supabase
+                            .from('project_change_responses')
+                            .insert([project_change_row])
+                            .select()
+                            .single();
+
+                        if (tError) {
+                            form.insertAdjacentHTML(
+                                "beforeend",
+                                `<div class="error-message">Something went wrong. Try again.${tError.message ? `<br>${tError.message}` : ""}</div>`
+                            );
+                            console.log(tError.message);
+                        }
+                    }
+                    else {
+                        const { data: tData, error: tError } = await supabase
+                            .from('static_forms_responses')
+                            .insert([static_forms_row])
+                            .select()
+                            .single();
+
+                        if (tError) {
+                            form.insertAdjacentHTML(
+                                "beforeend",
+                                `<div class="error-message">Something went wrong. Try again.${tError.message ? `<br>${tError.message}` : ""}</div>`
+                            );
+                            console.log(tError.message);
+                        }
+                    }
+
+
 
                     if (error) {
                         form.insertAdjacentHTML(
