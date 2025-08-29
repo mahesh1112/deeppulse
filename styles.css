@@ -197,7 +197,7 @@ body {
       padding: 16px 0;
     }
     .nps-slider {
-      width: 100%;
+      width: 50%;
       height: 8px;
       /* -webkit-appearance: none; */
       background: linear-gradient(to right, #6366f1 50%, white 50%);
@@ -304,3 +304,4 @@ body {
         grid-template-columns: 1fr;  /* Single column on mobile */
       }
     }
+
