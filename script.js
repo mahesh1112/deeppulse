@@ -232,7 +232,7 @@ async function init() {
                 const label = document.createElement("label");
                 label.className = "question-label";
                 label.htmlFor = `q_${idx}`;
-                label.innerText = `${idx + 1}.  ${q.label}`;
+                label.innerHTML = `${idx + 1}. ${q.label} <span style="color:#ef4444">*</span>`;
                 qDiv.appendChild(label);
 
                 // Force all fields to required
@@ -595,6 +595,7 @@ init().catch((err) => {
     document.getElementById("formContainer").innerHTML = `
     <div class="error-message">An unexpected error occurred.</div>`;
 });
+
 
 
 
