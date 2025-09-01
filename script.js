@@ -453,7 +453,7 @@ async function init() {
                         learning_needs: bucketPayload.learning_needs,
                         satisfaction: bucketPayload.satisfaction,
                         worklife_balance: bucketPayload.worklife_balance,
-
+                        department: department,
                     };
 
                     const project_change_row = {
@@ -595,6 +595,7 @@ init().catch((err) => {
     document.getElementById("formContainer").innerHTML = `
     <div class="error-message">An unexpected error occurred.</div>`;
 });
+
 
 
 
