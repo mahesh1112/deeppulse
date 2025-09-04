@@ -1,370 +1,489 @@
+/* IMPORTANT: Add this viewport meta tag to your HTML head */
+/* <meta name="viewport" content="width=device-width, initial-scale=1.0"> */
+
 body {
-    background: #f7f9fb;
-    font-family: 'Segoe UI', Arial, sans-serif;
-    margin: 0;
-    padding: 0;
+  background: #f7f9fb;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
 }
 
 .container {
-    max-width: 800px;
-    margin: 40px auto;
-    background: #fff;
-    border: 4px solid #7f81f3;
-    /* Purple border */
-    border-radius: 16px;
-    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
-    padding: 32px 24px;
+  max-width: 800px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  padding: 32px 24px;
 }
 
-
 .form-intro {
-    text-align: center;
-    margin-bottom: 28px;
-    padding: 8px 0;
+  text-align: center;
+  margin-bottom: 28px;
+  padding: 8px 0;
 }
 
 .form-intro h2 {
-    color: #111827;
-    /* dark neutral, softer than black */
-    font-size: 1.6rem;
-    font-weight: 600;
-    margin-bottom: 6px;
-    letter-spacing: -0.3px;
+  color: #111827;
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+  letter-spacing: -0.3px;
 }
 
 .form-subtext {
-    color: #4b5563;
-    /* muted gray */
-    font-size: 0.9rem;
-    line-height: 1.4;
-    max-width: 480px;
-    margin: 8px auto 50px;
+  color: #4b5563;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-width: 480px;
+  margin: 8px auto 50px;
 }
-
-
-
-/* .question {
-    margin-bottom: 16px;
-    min-width: 0;
-} */
 
 .question {
-  background: #f8fafc; /* light background for each tile */
-  border: 1px solid #e2e8f0; /* border color for the tile */
-  border-radius: 12px; /* rounded corners */
-  padding: 16px 20px; /* spacing inside the tile */
-  margin-bottom: 20px; /* space between tiles */
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05); /* subtle shadow */
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.question:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  margin-bottom: 16px;
+  min-width: 0;
 }
 
 .input-text {
-    width: 100%;
-    padding: 12px 16px;
-    border: 2px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: all 0.2s ease;
-    box-sizing: border-box;
-    background-color: #f8fafc;
-    max-height: 100px;
-    /* Set maximum height */
-    overflow-y: auto;
-    /* Enable vertical scrolling */
-    resize: vertical;
-    /* Allow vertical resizing */
-    min-height: 45px;
-    /* Set minimum height */
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+  background-color: #f8fafc;
+  max-height: 100px;
+  overflow-y: auto;
+  resize: vertical;
+  min-height: 45px;
+}
+
+.input-text:focus {
+  border-color: #6366f1;
+  background-color: #fff;
+  outline: none;
 }
 
 /* Custom scrollbar styling */
 .input-text::-webkit-scrollbar {
-    width: 8px;
+  width: 8px;
 }
 
 .input-text::-webkit-scrollbar-track {
-    background: #f1f5f9;
-    border-radius: 4px;
+  background: #f1f5f9;
+  border-radius: 4px;
 }
 
 .input-text::-webkit-scrollbar-thumb {
-    background: #cbd5e1;
-    border-radius: 4px;
+  background: #cbd5e1;
+  border-radius: 4px;
 }
 
 .input-text::-webkit-scrollbar-thumb:hover {
-    background: #94a3b8;
+  background: #94a3b8;
 }
 
 .question-label {
-    font-weight: 500;
-    color: #374151;
-    margin-bottom: 12px;
-    display: block;
-    font-size: 0.95rem;
-    letter-spacing: 0.01em;
+  font-weight: 500;
+  color: #374151;
+  margin-bottom: 12px;
+  display: block;
+  font-size: 0.95rem;
+  letter-spacing: 0.01em;
 }
 
-/* Make specific question types full-width */
+/* Grid layout for desktop */
+form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
 .question.full-width,
 .question:has(.mcq-options),
 .question:has(.nps-container) {
-    grid-column: 1 / -1;
-    /* Takes up all columns */
+  grid-column: 1 / -1;
 }
 
-/* Add to your CSS */
 .question.half-width {
-    grid-column: span 1;
-    /* Takes up one column */
+  grid-column: span 1;
 }
 
 .mcq-options {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .mcq-option {
-    background: #f1f5f9;
-    border-radius: 6px;
-    padding: 8px 12px;
-    cursor: pointer;
-    transition: background 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    width: 50%;
+  background: #f1f5f9;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 50%;
 }
 
 .mcq-option input[type="radio"] {
-    accent-color: #6366f1;
+  accent-color: #6366f1;
 }
 
 .mcq-option:hover {
-    background: #e0e7ef;
+  background: #e0e7ef;
 }
 
 button[type="submit"] {
-    background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 32px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s ease, background 0.3s ease;
-    display: block;
-    /* margin-top: 12px; */
-    margin: 24px auto 0;
-    /* grid-column: 1 / -1;  Make button full-width */
-    width: 30%;
-    text-align: center;
-
-
+  background: linear-gradient(90deg, #6366f1 0%, #60a5fa 100%);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.3s ease;
+  display: block;
+  margin: 24px auto 0;
+  width: 30%;
+  text-align: center;
+  grid-column: 1 / -1;
 }
 
 button[type="submit"]:hover {
-    background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
-    transform: translateY(-2px);
+  background: linear-gradient(90deg, #4f46e5 0%, #2563eb 100%);
+  transform: translateY(-2px);
 }
 
 .success-message {
-    color: #22c55e;
-    text-align: center;
-    margin-top: 16px;
-    font-weight: 500;
+  color: #22c55e;
+  text-align: center;
+  margin-top: 16px;
+  font-weight: 500;
 }
 
 .error-message {
-    color: #ef4444;
-    text-align: center;
-    margin-top: 16px;
-    font-weight: 500;
+  color: #ef4444;
+  text-align: center;
+  margin-top: 16px;
+  font-weight: 500;
 }
 
 /* Star Rating Styles */
 .star-rating {
-    display: inline-flex;
-    gap: 4px;
-    direction: rtl;
-    justify-content: center;
-    /* Reverse the direction for hover effect */
+  display: inline-flex;
+  gap: 4px;
+  direction: rtl;
+  justify-content: center;
 }
 
 .star {
-    cursor: pointer;
-    font-size: 24px;
-    color: #ddd;
-    transition: transform 0.2s ease, color 0.2s ease;
+  cursor: pointer;
+  font-size: 24px;
+  color: #ddd;
+  transition: transform 0.2s ease, color 0.2s ease;
 }
 
 .star:hover {
-    font-size: 24px;
-    cursor: pointer;
-    color: #cbd5e1;
-    transition: all 0.2s ease;
+  color: #cbd5e1;
+  transition: all 0.2s ease;
 }
 
 .star.active {
-    color: #ffd700;
-    animation: pop 0.3s ease-out;
+  color: #ffd700;
 }
-
-/* @keyframes pop {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.4); }
-      100% { transform: scale(1); }
-    } */
 
 /* NPS Slider Styles */
 .nps-container {
-    padding: 16px 0;
+  padding: 16px 0;
 }
 
 .nps-slider {
-    width: 50%;
-    height: 8px;
-    /* -webkit-appearance: none; */
-    background: linear-gradient(to right, #6366f1 50%, white 50%);
-    border: 1px solid #cbd5e1;
-    border-radius: 8px;
-    outline: none;
+  width: 50%;
+  height: 8px;
+  background: linear-gradient(to right, #6366f1 50%, white 50%);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
 }
 
 .nps-slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 24px;
-    height: 24px;
-    background: white;
-    border: 2px solid #6366f1;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: transform 0.1s;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border: 2px solid #6366f1;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.1s;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
 .nps-slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .nps-value {
-    text-align: center;
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: #6366f1;
-    margin-top: 8px;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #6366f1;
+  margin-top: 8px;
 }
 
 /* Loading Overlay */
 .loading-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(255, 255, 255, 0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.3s;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
 }
 
 .loading-overlay.visible {
-    opacity: 1;
-    pointer-events: all;
+  opacity: 1;
+  pointer-events: all;
 }
 
 .spinner {
-    width: 40px;
-    height: 40px;
-    border: 4px solid #f3f3f3;
-    border-top: 4px solid #6366f1;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+  width: 40px;
+  height: 40px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #6366f1;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-
-    100% {
-        transform: rotate(360deg);
-    }
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 
 /* Required Field Styling */
 .required-field::after {
-    content: "*";
-    color: #ef4444;
-    margin-left: 4px;
+  content: "*";
+  color: #ef4444;
+  margin-left: 4px;
 }
 
 .invalid-input {
-    border-color: #ef4444 !important;
-    animation: shake 0.4s linear;
+  border-color: #ef4444 !important;
+  animation: shake 0.4s linear;
 }
 
 @keyframes shake {
-
-    0%,
-    100% {
-        transform: translateX(0);
-    }
-
-    25% {
-        transform: translateX(-8px);
-    }
-
-    75% {
-        transform: translateX(8px);
-    }
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
 }
 
-/* Success Message Animation */
 .success-message {
-    animation: slideIn 0.5s ease-out;
+  animation: slideIn 0.5s ease-out;
 }
 
 @keyframes slideIn {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
+  from { transform: translateY(-20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
-/* Error Input Styling */
 .input-error {
-    border: 2px solid #e53e3e !important;
-    background: #fff5f5 !important;
+  border: 2px solid #e53e3e !important;
+  background: #fff5f5 !important;
 }
 
-/* Responsive design */
-@media (max-width: 640px) {
-    .container {
-        max-width: 100%;
-        margin: 0;
-        border-radius: 0;
-        padding: 24px 16px;
-    }
+/* MOBILE-FIRST RESPONSIVE DESIGN */
 
-    form {
-        grid-template-columns: 1fr;
-        /* Single column on mobile */
-    }
+/* Mobile devices (up to 768px) - THIS IS THE KEY FIX */
+@media screen and (max-width: 768px) {
+  body {
+    font-size: 18px; /* Larger base font size for mobile */
+    line-height: 1.5;
+  }
+  
+  .container {
+    max-width: 100%;
+    margin: 0;
+    padding: 24px 16px;
+    border-radius: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+  
+  /* Force single column layout */
+  form {
+    display: block !important;
+    grid-template-columns: none !important;
+  }
+  
+  .question {
+    margin-bottom: 24px;
+    width: 100%;
+  }
+  
+  .question.half-width,
+  .question.full-width {
+    grid-column: unset;
+    width: 100%;
+  }
+  
+  .form-intro h2 {
+    font-size: 2rem; /* Much larger heading */
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+  
+  .form-subtext {
+    font-size: 1.1rem; /* Larger subtext */
+    line-height: 1.6;
+    margin: 12px auto 32px;
+    max-width: 100%;
+    padding: 0;
+  }
+  
+  .question-label {
+    font-size: 1.1rem; /* Larger labels */
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: #111827;
+  }
+  
+  .input-text {
+    padding: 16px 20px; /* Much larger padding */
+    font-size: 1.1rem; /* Larger input text */
+    min-height: 56px; /* Taller inputs */
+    border-radius: 12px;
+    border-width: 2px;
+  }
+  
+  /* MCQ Options - Much bigger */
+  .mcq-option {
+    width: 100%;
+    padding: 18px 20px; /* Much larger padding */
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    border-radius: 12px;
+    min-height: 56px; /* Touch-friendly height */
+    align-items: center;
+  }
+  
+  .mcq-option input[type="radio"] {
+    transform: scale(1.5); /* Larger radio buttons */
+    margin-right: 12px;
+  }
+  
+  /* NPS Slider - Bigger */
+  .nps-slider {
+    width: 100%;
+    height: 12px; /* Thicker slider */
+    margin: 16px 0;
+  }
+  
+  .nps-slider::-webkit-slider-thumb {
+    width: 36px; /* Much larger thumb */
+    height: 36px;
+    border-width: 3px;
+  }
+  
+  .nps-value {
+    font-size: 1.4rem; /* Larger NPS value */
+    margin-top: 12px;
+  }
+  
+  /* Star Rating - Bigger */
+  .star {
+    font-size: 36px; /* Much larger stars */
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .star-rating {
+    gap: 8px;
+  }
+  
+  /* Submit Button - Much bigger */
+  button[type="submit"] {
+    width: 100%;
+    padding: 18px 24px; /* Larger padding */
+    font-size: 1.2rem; /* Larger text */
+    margin-top: 32px;
+    border-radius: 12px;
+    min-height: 56px; /* Touch-friendly height */
+  }
+  
+  /* Messages */
+  .success-message,
+  .error-message {
+    font-size: 1.1rem;
+    margin-top: 20px;
+    padding: 12px;
+  }
+}
+
+/* Extra small devices (up to 480px) */
+@media screen and (max-width: 480px) {
+  .container {
+    padding: 20px 12px;
+    height: 100vh; /* Maintain fixed height */
+    max-height: 100vh;
+  }
+  
+  .form-intro {
+    margin-bottom: 16px; /* Reduce spacing on small screens */
+  }
+  
+  .form-intro h2 {
+    font-size: 1.8rem;
+  }
+  
+  .form-subtext {
+    font-size: 1rem;
+  }
+  
+  .question-label {
+    font-size: 1rem;
+  }
+  
+  .input-text {
+    padding: 14px 16px;
+    font-size: 1rem;
+    min-height: 50px;
+  }
+  
+  .mcq-option {
+    padding: 16px 18px;
+    font-size: 1rem;
+    min-height: 50px;
+  }
+  
+  .star {
+    font-size: 32px;
+  }
+  
+  button[type="submit"] {
+    padding: 16px 20px;
+    font-size: 1.1rem;
+    min-height: 52px;
+  }
+}
+
+/* Prevent zoom on iOS when focusing inputs */
+@supports (-webkit-touch-callout: none) {
+  .input-text {
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
 }
