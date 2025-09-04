@@ -437,13 +437,21 @@ button[type="submit"]:hover {
 /* Extra small devices (up to 480px) */
 @media screen and (max-width: 480px) {
   .container {
-    padding: 20px 12px;
-    height: 100vh; /* Maintain fixed height */
-    max-height: 100vh;
+    margin: 5px;
+    padding: 16px 12px;
+    border-radius: 8px;
   }
   
-  .form-intro {
-    margin-bottom: 16px; /* Reduce spacing on small screens */
+  .form-intro h2 {
+    font-size: 1.5rem;
+  }
+  
+  .form-subtext {
+    font-size: 0.9rem;
+  }
+  
+  .question {
+    margin-bottom: 16px;
   }
   
   .form-intro h2 {
