@@ -154,7 +154,7 @@ form {
 .star-rating {
   display: flex;
   gap: 8px;
-  justify-content: center;
+  justify-content: left;
   margin: 16px 0;
   direction: rtl;
 }
@@ -457,4 +457,5 @@ button[type="submit"]:active {
     border-width: 3px;
   }
 }
+
 
