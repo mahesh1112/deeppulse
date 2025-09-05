@@ -199,53 +199,41 @@ form {
   color: #6b7280;
 }
 
-.nps-slider {
-  -webkit-appearance: none; /* remove default WebKit styles */
-  -moz-appearance: none;    /* remove default Firefox styles */
-  appearance: none;
-  width: 50%;
-  height: 8px;
-  border: none;
-  outline: none;
+.nps-container {
+  padding: 16px 0;
 }
 
-.nps-slider::-webkit-slider-runnable-track {
-  border-radius: 8px;
+.nps-slider {
+  width: 50%;
   height: 8px;
+  background: linear-gradient(to right, #6366f1 50%, white 50%);
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  outline: none;
 }
 
 .nps-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
   width: 24px;
   height: 24px;
   background: white;
   border: 2px solid #6366f1;
   border-radius: 50%;
   cursor: pointer;
+  transition: transform 0.1s;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  margin-top: -8px;
 }
 
 .nps-slider::-webkit-slider-thumb:hover {
   transform: scale(1.1);
 }
 
-.nps-slider::-moz-range-thumb {
-  width: 32px;
-  height: 32px;
-  background: white;
-  border: 3px solid #6366f1;
-  border-radius: 50%;
-  cursor: pointer;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-}
-
 .nps-value {
-  font-size: 1.5rem;
-  font-weight: 700;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 600;
   color: #6366f1;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 /* Submit Button */
