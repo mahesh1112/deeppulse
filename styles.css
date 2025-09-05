@@ -188,7 +188,7 @@ form {
 /* NPS Slider */
 .nps-container {
   padding: 16px 0;
-  text-align: center;
+  text-align: left;
 }
 
 .nps-labels {
@@ -199,9 +199,6 @@ form {
   color: #6b7280;
 }
 
-.nps-container {
-  padding: 16px 0;
-}
 
 .nps-slider {
   width: 50%;
@@ -427,7 +424,7 @@ button[type="submit"]:active {
   }
   
   .nps-slider {
-    width: 70%;
+    width: 50%;
   }
 }
 
@@ -460,3 +457,4 @@ button[type="submit"]:active {
     border-width: 3px;
   }
 }
+
